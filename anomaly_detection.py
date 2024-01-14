@@ -67,3 +67,67 @@ def selectThreshold(yval, pval):
             best_F1 = F1
             best_epsilon = epsilon
     return best_epsilon, best_F1
+
+# Load the dataset (ex8data1.mat)
+data1 = loadmat('ex8data1.mat')
+X = data1['X']
+Xval = data1['Xval']
+yval = data1['yval']
+
+# Visualize the example dataset
+plt.figure()
+plt.plot(X[:, 0], X[:, 1], 'bx')
+plt.axis([0, 30, 0, 30])
+plt.xlabel('Latency (ms)')
+plt.ylabel('Throughput (mb/s)')
+plt.show()
+
+# Estimate mu and sigma2
+mu, sigma2 = estimateGaussian(X)
+
+# Returns the density of the multivariate normal at each data point (row) of X
+p = multivariateGaussian(X, mu, sigma2)
+
+# Visualize the fit
+visualizeFit(X, mu, sigma2)
+plt.xlabel('Latency (ms)')
+plt.ylabel('Throughput (mb/s)')
+
+# Compute pval
+pval = multivariateGaussian(Xval, mu, sigma2)
+
+# Find the best threshold
+epsilon, F1 = selectThreshold(yval, pval)
+print(f'Best epsilon found using cross-validation: {epsilon:.2e}')
+print(f'Best F1 on Cross Validation Set: {F1:.4f}')
+
+# Find the outliers in the training set and plot them
+outliers = np.where(p < epsilon)
+
+# Visualize the 
+plt.figure(1)
+visualizeFit(X, mu, sigma2)
+plt.figure(1)
+plt.plot(X[outliers, 0], X[outliers, 1], 'o', linewidth=2, markersize=10,markeredgecolor='r',markerfacecolor='none')
+plt.show()
+
+# Load the second dataset (ex8data2.mat)
+data2 = loadmat('ex8data2.mat')
+X = data2['X']
+Xval = data2['Xval']
+yval = data2['yval']
+
+# Apply the same steps to the larger dataset
+mu, sigma2 = estimateGaussian(X)
+
+# Training set
+p = multivariateGaussian(X, mu, sigma2)
+
+# Cross-validation set
+pval = multivariateGaussian(Xval, mu, sigma2)
+
+# Find the best threshold
+epsilon, F1 = selectThreshold(yval, pval)
+print(f'Best epsilon found using cross-validation: {epsilon:.2e}')
+print(f'Best F1 on Cross Validation Set: {F1:.4f}')
+print(f'# Outliers found: {np.sum((p < epsilon).astype(np.float64))}')
