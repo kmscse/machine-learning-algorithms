@@ -59,3 +59,20 @@ def kMeansInitCentroids(X, K):
     centroids = X[randidx[:K], :]
 
     return centroids
+
+
+def pca(X):
+    # Useful values
+    m, n = X.shape
+
+    # Initialize U and S
+    U = np.zeros((n, n))
+    S = np.zeros((n, n))
+
+    # Compute the covariance matrix
+    Sigma = (1 / m) * X.T @ X
+
+    # Compute the eigenvectors and eigenvalues of the covariance matrix
+    U, S, _ = np.linalg.svd(Sigma)
+
+    return U, S
