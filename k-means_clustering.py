@@ -20,3 +20,13 @@ def computeCentroids(X, idx, K):
             centroids[i - 1, :] = np.mean(X[index, :], axis=0)
 
     return centroids
+
+def featureNormalize(X):
+    # Calculate the mean and standard deviation for each feature
+    mu = np.mean(X, axis=0)
+    sigma = np.std(X, axis=0)
+
+    # Normalize the features
+    X_norm = (X - mu) / sigma
+
+    return X_norm, mu, sigma
