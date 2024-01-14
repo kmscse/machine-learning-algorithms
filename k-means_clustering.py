@@ -76,3 +76,19 @@ def pca(X):
     U, S, _ = np.linalg.svd(Sigma)
 
     return U, S
+
+def plotDataPoints(X, idx, K):
+    # Create a color palette
+    palette = plt.cm.hsv(np.linspace(0, 1, K + 1))
+    colors = palette[idx, :]
+
+    # Plot the data points
+    plt.scatter(X[:, 0], X[:, 1], c=colors, s=15)
+
+    # Set labels and title (customize as needed)
+    plt.xlabel('Feature 1')
+    plt.ylabel('Feature 2')
+    plt.title('Data Points Colored by Cluster Assignment')
+
+    # Show the plot
+    plt.show()
