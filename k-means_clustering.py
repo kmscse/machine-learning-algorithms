@@ -30,3 +30,32 @@ def featureNormalize(X):
     X_norm = (X - mu) / sigma
 
     return X_norm, mu, sigma
+
+def findClosestCentroids(X, centroids):
+    # Set K
+    K = centroids.shape[0]
+
+    # Initialize idx
+    idx = np.zeros(X.shape[0], dtype=int)
+
+    # Iterate over each example in X
+    for i in range(X.shape[0]):
+        # Compute the squared Euclidean distance to each centroid
+        distances = np.sum((X[i] - centroids) ** 2, axis=1)
+
+        # Find the index of the closest centroid
+        idx[i] = np.argmin(distances) +1 # Add 1 to match MATLAB's indexing
+
+    return idx
+
+def kMeansInitCentroids(X, K):
+    # Initialize centroids as zeros
+    centroids = np.zeros((K, X.shape[1]))
+
+    # Randomly reorder the indices of examples
+    randidx = np.random.permutation(X.shape[0])
+
+    # Take the first K examples as centroids
+    centroids = X[randidx[:K], :]
+
+    return centroids
