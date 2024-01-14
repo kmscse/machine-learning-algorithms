@@ -92,3 +92,21 @@ def plotDataPoints(X, idx, K):
 
     # Show the plot
     plt.show()
+    
+def plotProgresskMeans(X, centroids, previous, idx, K, i):
+    # Plot the examples with colors assigned to each centroid
+    plotDataPoints(X, idx, K)
+
+    # Plot the centroids as black x's
+    plt.plot(centroids[:, 0], centroids[:, 1], 'kx', markersize=10, linewidth=3)
+    
+
+    # Plot lines connecting previous and current centroids
+    for j in range(centroids.shape[0]):
+        plt.plot([previous[j, 0], centroids[j, 0]], [previous[j, 1], centroids[j, 1]], 'k-')
+
+    # Title
+    plt.title(f'Iteration number {i}')
+
+    # Show the plot
+    plt.show()
