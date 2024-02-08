@@ -4,18 +4,22 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import optimize
 
+# Sigmoid activation function
 def sigmoid(z):
     g = 1/(1+np.exp(-z))
     return g
 
+# Gradient of the sigmoid function
 def sigmoidGradient(z):
     g = np.zeros(z.shape)
     a = sigmoid(z)
     g = a*(1-a)
     return g
 
+# Cost function for the neural network
 def nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,
                                    X, y, Lambda):
+    # Reshaping the parameters                                   
     Theta1 = np.reshape(nn_params[0:hidden_layer_size * (input_layer_size + 1)],
                  (hidden_layer_size, (input_layer_size + 1)))
     Theta2 = np.reshape(nn_params[( (hidden_layer_size * (input_layer_size + 1))):],
