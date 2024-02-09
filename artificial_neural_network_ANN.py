@@ -33,6 +33,7 @@ def nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,
     a3 = np.zeros((num_labels,m))
     yk = np.zeros((num_labels,m))
     epsilon = 1e-15
+    # Forward propagation                                   
     for ii in np.arange(m):
         a1[:,ii] = X[ii,:].T
         z2 = Theta1@a1[:,ii]
