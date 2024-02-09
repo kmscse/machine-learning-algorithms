@@ -42,14 +42,17 @@ def nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,
         a3[:,ii]= sigmoid(z3)
         h = a3[:,ii]
         yk[y[ii]-1,ii] = 1
+        # Cost computation
         J += np.sum((-yk[:,ii]).T*np.log(h+epsilon)-(1-yk[:,ii]).T*np.log(1-h+epsilon))
     J = J/m
     b = np.sum(np.sum(Theta1[:,1:]**2))+np.sum(np.sum(Theta2[:,1:]**2))
     J += Lambda/(2*m)*b
     return J
 
+# Gradient computation for the neural network
 def gradient(nn_params,input_layer_size,hidden_layer_size,num_labels,
                                    X, y, Lambda):
+    # Reshaping the parameters                                   
     Theta1 = np.reshape(nn_params[0:hidden_layer_size * (input_layer_size + 1)],
                  (hidden_layer_size, (input_layer_size + 1)))
     Theta2 = np.reshape(nn_params[( (hidden_layer_size * (input_layer_size + 1))):],
@@ -64,6 +67,7 @@ def gradient(nn_params,input_layer_size,hidden_layer_size,num_labels,
     a2 = np.zeros((Theta1.shape[0]+1,m))
     a3 = np.zeros((num_labels,m))
     yk = np.zeros((num_labels,m))
+    # Forward propagation                                   
     for ii in np.arange(m):
         a1[:,ii] = X[ii,:].T
         z2 = Theta1@a1[:,ii]
@@ -72,11 +76,13 @@ def gradient(nn_params,input_layer_size,hidden_layer_size,num_labels,
         a3[:,ii]= sigmoid(z3)
         h = a3[:,ii]
         yk[y[ii]-1,ii] = 1
+        # Cost computation
         J += np.sum((-yk[:,ii]).T*np.log(h)-(1-yk[:,ii]).T*np.log(1-h))
     J = J/m
     b = np.sum(np.sum(Theta1[:,1:]**2))+np.sum(np.sum(Theta2[:,1:]**2))
     J += Lambda/(2*m)*b
 
+    # Backpropagation                                   
     D1 = np.zeros(Theta1.shape)
     D2 = np.zeros(Theta2.shape)
     for ii in np.arange(m):
@@ -94,11 +100,13 @@ def gradient(nn_params,input_layer_size,hidden_layer_size,num_labels,
     grad = np.concatenate((Theta1_grad.reshape(-1),Theta2_grad.reshape(-1)),axis=0)
     return grad
 
+# Function to initialize weights for debugging
 def debugInitializeWeights(fan_out, fan_in):
     W = np.zeros((fan_out, 1 + fan_in))
     W = np.reshape(np.sin(np.arange(0,W.size)), W.shape) / 10
     return W
 
+# Function to compute numerical gradient
 def computeNumericalGradient(nn_params,input_layer_size, hidden_layer_size, num_labels, X, y, Lambda):
     theta = nn_params
     numgrad = np.zeros(theta.shape)
@@ -111,7 +119,8 @@ def computeNumericalGradient(nn_params,input_layer_size, hidden_layer_size, num_
         numgrad[p] = (loss2 - loss1) / (2*e)
         perturb[p] = 0
     return numgrad
-    
+
+# Function to check gradients
 def checkNNGradients(Lambda):
     input_layer_size = 3
     hidden_layer_size = 5
@@ -134,7 +143,8 @@ def checkNNGradients(Lambda):
     print('If your backpropagation implementation is correct, then \n \
          the relative difference will be small (less than 1e-9). \n \
          \nRelative Difference: {:.3e}\n'.format(diff))
-    
+
+# Function to display data
 def displayData(X,nCols):
     m,n = X.shape
     nRows = int(m/nCols)
@@ -144,6 +154,7 @@ def displayData(X,nCols):
         plt.imshow(X[i,:].reshape(20,20,order='F'),extent=[-1,1,-1,1]) 
         plt.axis('off')
 
+# Function to predict output
 def predict(Theta1,Theta2, X):
     
     m, n = X.shape
@@ -156,7 +167,8 @@ def predict(Theta1,Theta2, X):
     for i in range(m):
         p[i] = np.where(h2[i,:]==np.max(h2[i,:]))[0][0]+1
     return p
-   
+
+# Loading and preparing data
 df = pd.read_csv('ex3data1.csv',header = None)
 df.head()
 print(df.head())
@@ -169,6 +181,7 @@ randIndex = np.random.permutation(m)
 sel = X[randIndex[0:100],:]
 displayData(sel,10)
 
+# Neural network parameters
 input_layer_size  = 400  # 20x20 Input Images of Digits
 hidden_layer_size = 25   # 25 hidden units
 num_labels = 10          # 10 labels, from 1 to 10 (note that we have mapped "0" to label 10)
@@ -180,12 +193,14 @@ initial_Theta2 = np.random.rand(num_labels,hidden_layer_size+1)* 2 * epsilon_ini
 
 initial_nn_params = np.concatenate((initial_Theta1.reshape(-1), initial_Theta2.reshape(-1)),axis=0)
 
+# Checking gradients
 Lambda = 0
 checkNNGradients(Lambda)
 
 Lambda = 3
 checkNNGradients(Lambda)
 
+# Optimizing neural network parameters
 sol_opt =  optimize.fmin_cg(nnCostFunction,initial_nn_params,fprime=gradient,
                                 args=(input_layer_size,hidden_layer_size,
                                       num_labels,X,y.astype(int),Lambda),
@@ -197,10 +212,12 @@ Theta1 = np.reshape(theta_opt[0:hidden_layer_size * (input_layer_size + 1)],
 Theta2 = np.reshape(theta_opt[( (hidden_layer_size * (input_layer_size + 1))):],
                  (num_labels, (hidden_layer_size + 1)))
 
+# Predicting outputs
 p = predict(Theta1, Theta2, X)
 accuracy = np.mean(1*(p==y))*100
 print('\nTraining Set Accuracy: {:.2f}\n'.format(accuracy))
 
+# Displaying predicted data
 sel = np.random.permutation(m)
 n = 20
 sel = sel[0:n]
